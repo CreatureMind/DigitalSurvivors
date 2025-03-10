@@ -3,61 +3,47 @@ using System.Collections.Generic;
 
 namespace DigitalSurvivors;
 
-public class Player
+public class Player : GameObject
 {
-    ConsoleKeyInfo _keyInfo = new ConsoleKeyInfo();
-    private char key;
-    
-    private readonly List<Position> _playerPosition = new List<Position>();
-
-    private int X { get; set; } = Canvas.Width / 2;
-    private int Y { get; set; } = Canvas.Height / 2;
-
-    public void DrawPlayer()
+    public override void Awake()
     {
-        _playerPosition.Clear();
-        _playerPosition.Add(new Position(X, Y));
-
-        foreach (Position pos in _playerPosition)
-        {
-            Console.SetCursorPosition(X, Y);
-            Console.Write("\u2588");
-        }
-    }
-
-    public void Input()
-    {
-        if (Console.KeyAvailable)
-        {
-            _keyInfo = Console.ReadKey(true);
-            key = _keyInfo.KeyChar;
-        }
+        Program.OnKeyPress += MovePlayer;
+        sprite = '@';
+        position.X = Program.currentScene.Width / 2;
+        position.Y = Program.currentScene.Height / 2;
     }
     
-    public void MovePlayer()
+    public void MovePlayer(ConsoleKey key)
     {
-        /*if (_keyInfo.Key == ConsoleKey.W)
-        {
-            _playerPosition.Add(new Position(X, Y+1));
-            //Y--;
-        }*/
         switch (key)
         {
-            case 'w':
-                Y--;
+            case ConsoleKey.W:
+                position.Y--;
                 break;
-            case 's':
-                Y++;
+            case ConsoleKey.S:
+                position.Y++;
                 break;
-            case 'd':
-                X++;
+            case ConsoleKey.D:
+                position.X++;
                 break;
-            case 'a':
-                X--;
+            case ConsoleKey.A:
+                position.X--;
                 break;
         }
-        _playerPosition.Add(new Position(X, Y));
-        _playerPosition.RemoveAt(0);
+        
+        if(position.X > Program.currentScene.Width - 2)
+            position.X = 1;
+        if(position.Y > Program.currentScene.Height - 2)
+            position.Y = 1;
+        if(position.X < 1)
+            position.X = Program.currentScene.Width - 2;
+        if(position.Y < 1)
+            position.Y = Program.currentScene.Height - 2;
+        
         Thread.Sleep(100);
+    }
+
+    private void Attack()
+    {
     }
 }

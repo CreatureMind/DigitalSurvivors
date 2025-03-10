@@ -2,8 +2,8 @@ namespace DigitalSurvivors;
 
 public static class Canvas
 {
-    public static int Width { get; set; }
-    public static int Height { get; set; }
+    public static int Width { get; }
+    public static int Height { get; }
 
     static Canvas()
     {
