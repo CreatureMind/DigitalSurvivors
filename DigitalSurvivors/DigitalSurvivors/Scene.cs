@@ -20,5 +20,8 @@ public class Scene
     void OnSceneLoaded(Scene scene)
     {
         gameObjects.Add(new Player());
+        gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Normal));
+        gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Medium));
+        gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Heavy));
     }
 }

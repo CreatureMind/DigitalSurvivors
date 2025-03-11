@@ -17,7 +17,7 @@ public class Renderer
         
         Console.Clear();
         List<GameObject> curentGameObjects = new List<GameObject>(scene.gameObjects);
-        curentGameObjects.Sort((obj1, obj2) => obj1.layer > obj2.layer ? 0 : 1); 
+        curentGameObjects.Sort((obj1, obj2) => obj1.layer > obj2.layer ? 1 : 0); 
 
         var panel = new Panel("");
         panel.Header($"[red] Wave X [/]", Justify.Center);
@@ -44,9 +44,20 @@ public class Renderer
     {
         if (gameObject == null) return "";
 
-        if (gameObject.sprite == '@')
-            return ":bright_button:";
-        
-        return "";
+        switch (gameObject.sprite)
+        {
+            case '@':
+                return ":bright_button:";
+            case 'N':
+                return ":alien:";
+            case 'M':
+                return ":zombie:";
+            case 'H':
+                return ":robot:";
+            case 'E':
+                return ":alien_monster:";
+            default:
+                return gameObject.sprite.ToString();
+        }
     }
 }

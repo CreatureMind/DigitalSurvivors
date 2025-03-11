@@ -1,19 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace DigitalSurvivors;
 
 public class Player : GameObject
 {
+    public static Player instance;
     public override void Awake()
     {
+        instance = this;
         Program.OnKeyPress += MovePlayer;
         sprite = '@';
+        layer = 1;
         position.X = Program.currentScene.Width / 2;
         position.Y = Program.currentScene.Height / 2;
     }
     
-    public void MovePlayer(ConsoleKey key)
+    void MovePlayer(ConsoleKey key)
     {
         switch (key)
         {
@@ -43,7 +47,7 @@ public class Player : GameObject
         Thread.Sleep(100);
     }
 
-    private void Attack()
+    void Attack()
     {
     }
 }
