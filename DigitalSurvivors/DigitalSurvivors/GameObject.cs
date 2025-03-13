@@ -4,6 +4,8 @@ namespace DigitalSurvivors;
 
 public class GameObject
 {
+    public static event Action<GameObject> OnDestroy;
+    
     public Vector2 position;
     public int layer;
     public char sprite;
@@ -22,4 +24,10 @@ public class GameObject
     }
     
     public virtual void Awake(){}
+    
+    public void Destroy()
+    {
+        // Invoke the static destroy event
+        OnDestroy?.Invoke(this);
+    }
 }

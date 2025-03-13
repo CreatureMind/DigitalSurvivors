@@ -11,7 +11,7 @@ public static class EnemySpawner
     {
         int posX, posY;
 
-        posX = randomX.Next(1, Program.currentScene.Width);
+        posX = randomX.Next(1, Program.currentScene.Width - 1);
         
         if (posX == 1 || posX == Program.currentScene.Width - 2)
         {

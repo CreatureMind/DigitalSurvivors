@@ -33,6 +33,9 @@ class Program
             renderer.Render(currentScene);
             Thread.Sleep(200); // Controls game speed
         }
+        
+        Console.Clear();
+        Console.WriteLine("Game Over!");
     }
 
     static void ReadInput()

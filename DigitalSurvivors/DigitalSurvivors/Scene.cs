@@ -11,17 +11,42 @@ public class Scene
     {
         Width = width;
         Height = height;
-        gameObjects = new List<GameObject>();
+        GameObjects = new List<GameObject>();
+        
         Program.OnSceneLoaded += OnSceneLoaded;
+        Player.OnAttack += AddObject;
+        GameObject.OnDestroy += RemoveObject;
     }
     
-    public List<GameObject> gameObjects { get; }
+    public List<GameObject> GameObjects { get; set; }
 
     void OnSceneLoaded(Scene scene)
     {
-        gameObjects.Add(new Player());
-        gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Normal));
-        gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Medium));
-        gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Heavy));
+        GameObjects.Add(new Player());
+        GameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Normal));
+        GameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Medium));
+        GameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Heavy));
+    }
+
+    public void AddObject(GameObject gameObject)
+    {
+        if (gameObject != null)
+        {
+            GameObjects.Add(gameObject);
+        }
+    }
+
+    public void RemoveObject(GameObject gameObject)
+    {
+        if (gameObject != null && GameObjects.Contains(gameObject))
+        {
+            Debug.Log($"Slash count before removal: {GameObjects.Count(obj => obj is Slash)}");
+            GameObjects.Remove(gameObject);
+            Debug.Log($"Slash count after removal: {GameObjects.Count(obj => obj is Slash)}");
+        }
+        else
+        {
+            Debug.Log("Attempted to remove a null GameObject");
+        }
     }
 }
