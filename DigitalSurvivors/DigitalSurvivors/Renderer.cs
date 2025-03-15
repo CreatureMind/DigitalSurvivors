@@ -9,9 +9,18 @@ namespace DigitalSurvivors;
 
 public class Renderer
 {
+    private readonly Queue<String> _logMessages = new();
+    private int Score { get; set; }
+    
     public Renderer()
     {
         Awake();
+    }
+    
+    private void Awake()
+    {
+        Debug.OnDebug += AddLog;
+        Score = 0;
     }
     
     public void Render(Scene scene)
@@ -33,10 +42,10 @@ public class Renderer
         gamePanel.BorderColor(Color.Blue1);
         
         var uiPanel = new Panel(new Rows(
+            new Markup("[["+Life()+" ]]"),
+            new Text(Player.Instance?.Life.ToString() ?? string.Empty),
             new Text(""),
-            new Text(""),
-            new Text(""),
-            new Text("")
+            new Text($"Score: {Score:D4}")
         ));
         uiPanel.Header($"[yellow] Stats [/]", Justify.Center);
         uiPanel.Height = 6;
@@ -46,10 +55,18 @@ public class Renderer
         
         AnsiConsole.Write(gamePanel);
         AnsiConsole.Write(uiPanel);
+
+        Queue<String> logMessages = new(_logMessages);
+        
+        foreach (string logEntry in logMessages)
+        {
+            if (!string.IsNullOrEmpty(logEntry)) // Ensure the message isn't null or empty
+                AnsiConsole.WriteLine(logEntry);
+        }
         
         foreach (var gameObject in currentGameObjects)
         {
-            if (gameObject != null)
+            if (gameObject != null  || gameObject.isDestroyed)
             {
                 if(gameObject.position.X > scene.Width 
                    || gameObject.position.Y > scene.Height 
@@ -64,17 +81,35 @@ public class Renderer
         
         Console.SetCursorPosition(0, 0); // Prevent input lag
     }
-
-    public void Awake()
+    
+    private string Life()
     {
-        Debug.OnDebug += Render;
+        int maxLife = 100, currentLife = 0, bars = 46;
+        string fullBar = " \u25a0", emptyBar = " \u25a1";
+        
+        if (Player.Instance != null)
+        {
+            currentLife = Player.Instance.Life;
+        }
+        
+        float remainingLife = (float)currentLife / maxLife * bars;
+        int remainingBars = (int)remainingLife;
+        int lostLife = bars - remainingBars;
+        
+        Debug.Log($"{remainingBars}/{lostLife}");
+        Debug.Log($"{currentLife}/{maxLife}");
+        
+        return $"[red]{string.Concat(Enumerable.Repeat(fullBar, remainingBars))}{string.Concat(Enumerable.Repeat(emptyBar, lostLife))}[/]";
     }
 
-    private void Render(String message)
+    private void AddLog(String message)
     {
-        AnsiConsole.Write("Log:");
-        Console.SetCursorPosition(0, 60);
-        AnsiConsole.WriteLine(message);
+        if (string.IsNullOrWhiteSpace(message)) return; // Ignore null/empty messages
+        
+        _logMessages.Enqueue(message);
+        
+        if (_logMessages.Count >= 6) // Keep only the last 5 messages
+            _logMessages.Dequeue();
     }
 
     private int CompareGameObjects(GameObject obj1, GameObject obj2)

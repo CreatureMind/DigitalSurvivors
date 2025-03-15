@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Text;
 using System.Threading;
 using Spectre.Console;
@@ -9,7 +10,10 @@ namespace DigitalSurvivors;
 class Program
 {
     public static Scene currentScene;
-    static bool isRunning = true;
+    public static bool isRunning = true;
+    public static float deltaTime;
+    
+    private static DateTime previousFrameTime = DateTime.MinValue;
 
     public static event Action<ConsoleKey> OnKeyPress;
     public static event Action<Scene> OnSceneLoaded;
@@ -31,7 +35,16 @@ class Program
         while (isRunning)
         {
             renderer.Render(currentScene);
-            Thread.Sleep(200); // Controls game speed
+            
+            if(previousFrameTime != DateTime.MinValue)
+                deltaTime = (float)(DateTime.Now - previousFrameTime).TotalSeconds;
+            
+            previousFrameTime = DateTime.Now;
+            
+            List<GameObject> tempGameObjects = new List<GameObject>(currentScene.GameObjects);
+            tempGameObjects.ForEach(gameObject => gameObject.Update());
+
+            Thread.Sleep(100);
         }
         
         Console.Clear();
@@ -46,6 +59,9 @@ class Program
             {
                 var key = Console.ReadKey(true).Key;
                 OnKeyPress?.Invoke(key);
+                
+                if(key == ConsoleKey.Escape)
+                    isRunning = false;
             }
         }
     }

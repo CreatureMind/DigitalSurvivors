@@ -25,13 +25,13 @@ public static class EnemySpawner
         switch (enemyType)
         {
             case EnemyType.Normal:
-                return new Enemy(posX, posY, 5, 2, 0.03f, 3, EnemyType.Normal);
+                return new Enemy(posX, posY, 5, 2, 1f, 3, EnemyType.Normal);
             case EnemyType.Medium:
-                return new Enemy(posX, posY, 10, 4, 0.02f, 6, EnemyType.Medium);
+                return new Enemy(posX, posY, 10, 4, 0.5f, 6, EnemyType.Medium);
             case EnemyType.Heavy:
-                return new Enemy(posX, posY, 20, 6, 0.01f, 10, EnemyType.Heavy);
+                return new Enemy(posX, posY, 20, 6, 0.2f, 10, EnemyType.Heavy);
             default:
-                return new Enemy(posX, posY, 5, 2, 0.03f, 3, EnemyType.Normal);
+                return new Enemy(posX, posY, 5, 2, 1f, 3, EnemyType.Normal);
         }
     }
 }

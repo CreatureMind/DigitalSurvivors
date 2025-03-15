@@ -5,6 +5,8 @@ namespace DigitalSurvivors;
 public class Slash : GameObject
 {
     private int life = 1;
+    private float destructionTime = 0.1f;
+    public int Damage = 1;
 
     public Slash(float x, float y, char sprite)
     {
@@ -16,12 +18,17 @@ public class Slash : GameObject
     public override void Awake()
     {
         layer = 10;
-        _ = Update();
     }
 
-    async Task Update()
+    public override void Update()
     {
-        await Task.Delay(200);
-        Destroy();
+        if (destructionTime > 0)
+        {
+            destructionTime -= Program.deltaTime;
+        }
+        else
+        {
+            Destroy();
+        }
     }
 }
