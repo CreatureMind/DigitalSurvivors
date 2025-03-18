@@ -2,25 +2,27 @@ namespace DigitalSurvivors;
 
 public class Enemy : GameObject
 {
+    public static event Action<int> UpdateScore;
+
     private int _life; // Life determines how much health point the enemy has
     private int _damage; // Damage determines how much damage the enemy deals to the player
     private readonly float _speed; // Speed determines how many steps the enemy moves per update
-    private int _exp; // Exp determines how many experience the player gets for killing it
+    private int _score;
     private EnemyType _enemyType;
-    
+
     private float _moveProgress;
     private bool _moveHorizontally = true;
     private float _movementTime = 0.0f;
 
-    public Enemy(float x, float y, int life, int damage, float speed, int exp, EnemyType enemyType)
+    public Enemy(float x, float y, int life, int damage, float speed, int score, EnemyType enemyType)
     {
         position.X = x;
         position.Y = y;
         _life = life;
         _damage = damage;
         _speed = speed;
-        _exp = exp;
         _enemyType = enemyType;
+        _score = score;
 
         switch (enemyType)
         {
@@ -38,7 +40,7 @@ public class Enemy : GameObject
                 break;
         } // Sets the sprite
     }
-    
+
     public override void Awake()
     {
         layer = 0;
@@ -58,27 +60,30 @@ public class Enemy : GameObject
 
         if (_life <= 0)
         {
+            UpdateScore?.Invoke(_score);
             Destroy();
         }
     }
-    
+
     void MoveEnemy()
     {
         _moveProgress += _speed;
         if (_moveProgress < 1) return; // Move only when progress reaches 1
         _moveProgress = 0;
-        
+
         int moveX = 0, moveY = 0;
 
         if (Player.Instance != null)
         {
             if (_moveHorizontally)
             {
-                if (position.X != Player.Instance.position.X) moveX = (position.X < Player.Instance.position.X) ? 1 : -1;
+                if (position.X != Player.Instance.position.X)
+                    moveX = (position.X < Player.Instance.position.X) ? 1 : -1;
             }
             else
             {
-                if (position.Y != Player.Instance.position.Y) moveY = (position.Y < Player.Instance.position.Y) ? 1 : -1;
+                if (position.Y != Player.Instance.position.Y)
+                    moveY = (position.Y < Player.Instance.position.Y) ? 1 : -1;
             }
         }
 
@@ -86,7 +91,7 @@ public class Enemy : GameObject
         position.Y += moveY;
 
         _moveHorizontally = !_moveHorizontally; // Switch movement mode
-        
+
         Player? player = Program.currentScene?.FindPlayerAt(position.X, position.Y);
 
         player?.TakeDamage(_damage);

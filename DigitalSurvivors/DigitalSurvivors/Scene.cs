@@ -8,27 +8,38 @@ public class Scene
     
     public int Width { get; }
     public int Height { get; }
+    public string SceneName { get; }
+    private List<GameObject> _gameObjects = new();
 
-    public Scene(int width, int height)
+    public Scene(int width, int height, string sceneName)
     {
         //instance = this;
         Width = width;
         Height = height;
-        GameObjects = new List<GameObject>();
+        SceneName = sceneName;
         
         Program.OnSceneLoaded += OnSceneLoaded;
         Player.OnAttack += AddObject;
         //GameObject.OnDestroy += RemoveObject;
     }
     
-    public List<GameObject> GameObjects { get; set; }
-
     void OnSceneLoaded(Scene scene)
     {
-        GameObjects.Add(new Player());
-        GameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Normal));
-        GameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Medium));
-        GameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Heavy));
+        if(scene == null) return;
+        
+        if (scene.SceneName == "ScoreScene")
+        {
+            _gameObjects.Clear();
+            return;
+        }
+
+        if (scene.SceneName == "GameScene" && _gameObjects.Count <= 0)
+        {
+            _gameObjects.Add(new Player());
+            _gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Normal));
+            _gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Medium));
+            _gameObjects.Add(EnemySpawner.SpawnEnemy(EnemyType.Heavy));
+        }
     }
 
     public void AddObject(GameObject gameObject)
@@ -36,14 +47,24 @@ public class Scene
         if (gameObject == null || gameObject.isDestroyed)
             return;
         
-        if (!GameObjects.Contains(gameObject))
+        if (!_gameObjects.Contains(gameObject))
         {
-            GameObjects.Add(gameObject);
+            _gameObjects.Add(gameObject);
         }
         else
         {
             Debug.Log("Attempted to add existing object");
         }
+    }
+    
+    public GameObject[] GetGameObjects()
+    {
+        return _gameObjects.ToArray();
+    }
+
+    public void ClearGameObjects()
+    {
+        _gameObjects.Clear();
     }
 
     public void RemoveObject(GameObject gameObject)
@@ -58,7 +79,7 @@ public class Scene
         // {
         //     lock (gameObject)
         //     {
-                if (!GameObjects.Contains(gameObject))
+                if (!_gameObjects.Contains(gameObject))
                 {
                     Debug.Log($"Attempted to remove {gameObject}, but it was not found in the list.");
                     return;
@@ -66,7 +87,7 @@ public class Scene
     
                 if (gameObject.isDestroyed)
                 {
-                    GameObjects.Remove(gameObject);
+                    _gameObjects.Remove(gameObject);
                 }
             //}
             
@@ -77,11 +98,11 @@ public class Scene
     
     public Enemy? FindEnemyAt(float x, float y)
     {
-        return GameObjects.OfType<Enemy>().FirstOrDefault(enemy => enemy.position.X == x && enemy.position.Y == y);
+        return _gameObjects.OfType<Enemy>().FirstOrDefault(enemy => enemy.position.X == x && enemy.position.Y == y);
     }
     
     public Player? FindPlayerAt(float x, float y)
     {
-        return GameObjects.OfType<Player>().FirstOrDefault(player => player.position.X == x && player.position.Y == y);
+        return _gameObjects.OfType<Player>().FirstOrDefault(player => player.position.X == x && player.position.Y == y);
     }
 }

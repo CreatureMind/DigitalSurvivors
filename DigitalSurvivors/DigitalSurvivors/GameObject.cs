@@ -4,8 +4,6 @@ namespace DigitalSurvivors;
 
 public class GameObject
 {
-    //public static event Action<GameObject>? OnDestroy;
-    
     public Vector2 position;
     public int layer;
     public char sprite;
@@ -23,17 +21,16 @@ public class GameObject
         this.sprite = sprite;
         Awake();
     }
-    
-    public virtual void Awake(){}
-    
-    public virtual void Update(){}
 
-    public static Type GetClassType()
+    public virtual void Awake()
     {
-        return typeof(GameObject);
     }
 
-    
+    public virtual void Update()
+    {
+    }
+
+
     public void Destroy()
     {
         if (!isDestroyed)
@@ -41,12 +38,5 @@ public class GameObject
             isDestroyed = true;
             Program.currentScene.RemoveObject(this);
         }
-
-        //isDestroyed = true;
-
-        //Scene.instance?.RemoveObject(this);
-        //Program.currentScene.RemoveObject(this);
-        // Invoke the static destroy event
-        //OnDestroy?.Invoke(this);
     }
 }

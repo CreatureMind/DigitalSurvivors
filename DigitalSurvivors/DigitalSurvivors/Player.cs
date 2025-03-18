@@ -9,8 +9,11 @@ public class Player : GameObject
     public static event Action<GameObject> OnAttack;
     
     public static Player? Instance;
-    public int Life {get; set;}
+    public int Life { get; set; } = 100;
     private char _dir;
+    private static float _delayTime = 0.5f;
+    private float _attackDelayTime = _delayTime;
+    private bool _canAttack = true;
     
     public override void Awake()
     {
@@ -21,15 +24,26 @@ public class Player : GameObject
         layer = 1;
         position.X = Program.currentScene.Width / 2;
         position.Y = Program.currentScene.Height / 2;
-        Life = 100;
     }
 
     public override void Update()
     {
+        if(!_canAttack)
+            _attackDelayTime -= Program.deltaTime;
+        
+        if (_attackDelayTime <= 0.0f)
+        {
+            _canAttack = !_canAttack;
+            _attackDelayTime = _delayTime;
+        }
+        
         if (Life <= 0)
         {
             Destroy();
-            Program.isRunning = false;
+            Program.HighScoreTable.Add(Program.userName, Renderer.GetCurrentScore());
+            HighScoreManager.AddToHighScoreTable(Program.HighScoreTable);
+            Program.currentScene.ClearGameObjects();
+            Program.SetScene(new Scene(50, 50, "ScoreScene"));
         }
     }
     
@@ -54,7 +68,11 @@ public class Player : GameObject
                 _dir = 'l';
                 break;
             case ConsoleKey.Spacebar:
-                Attack(_dir);
+                if (_canAttack)
+                {
+                    Attack(_dir);
+                    _canAttack = !_canAttack;
+                }
                 break;
         }
         
@@ -67,39 +85,6 @@ public class Player : GameObject
         if(position.Y < 1)
             position.Y = Program.currentScene.Height - 2;
     }
-
-    // void Attack(char dir)
-    // {
-    //     Debug.Log("Attack!");
-    //         if (dir == 'u')
-    //         {
-    //             for (int i = 1; i < 5; i++)
-    //             {
-    //                 Program.currentScene.AddObject(new Slash(position.X, position.Y - i, '\u2502'));
-    //             }
-    //         }
-    //         else if (dir == 'd')
-    //         {
-    //             for (int i = 1; i < 5; i++)
-    //             {
-    //                 Program.currentScene.AddObject(new Slash(position.X, position.Y + i, '\u2502'));
-    //             }
-    //         }
-    //         else if (dir == 'r')
-    //         {
-    //             for (int i = 1; i < 5; i++)
-    //             {
-    //                 Program.currentScene.AddObject(new Slash(position.X + i, position.Y, '\u2500'));
-    //             }
-    //         }
-    //         else if (dir == 'l')
-    //         {
-    //             for (int i = 1; i < 5; i++)
-    //             {
-    //                 Program.currentScene.AddObject(new Slash(position.X - i, position.Y, '\u2500'));
-    //             }
-    //         }
-    // }
     
     void Attack(char dir)
     {
