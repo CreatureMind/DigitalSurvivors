@@ -105,15 +105,4 @@ static class FileUtilities
     {
         return File.Exists(filePath);
     }
-
-    // Retrieves the size of the file in bytes.
-    public static int GetFileSize(string filePath)
-    {
-        if (File.Exists(filePath))
-        {
-            long fileSize = new FileInfo(filePath).Length;
-            return (int)fileSize;
-        }
-        return -1; // Returns -1 if the file does not exist.
-    }
 }

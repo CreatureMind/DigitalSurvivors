@@ -2,26 +2,75 @@ using System.Numerics;
 
 namespace DigitalSurvivors;
 
-public static class EnemySpawner
+// Spawns enemies at random positions with a delay
+public class EnemySpawner : GameObject
 {
-    static Random randomX = new Random();
-    static Random randomY = new Random();
+    private float _delayTime = 1f; // Delay before spawning a new enemy
+    
+    static Random randomX = new();
+    static Random randomY = new();
+    private Random _roll = new(); // Randomizer for enemy type selection
+
+    private EnemyType randonEnemy;
+
+    public override void Update()
+    {
+        // Countdown before spawning a new enemy
+        if (_delayTime > 0)
+        {
+            _delayTime -= Program.deltaTime;
+        }
+        else
+        {
+            _delayTime = 4f; // Reset delay timer
+            
+            int enemyChance = _roll.Next(1, 101); // Get a random number from 1 to 100
+            
+            // Chose enemy type based on chance
+            if (enemyChance <= 60)
+                randonEnemy = EnemyType.Normal; // 60% chance
+            else if (enemyChance <= 90)
+                randonEnemy = EnemyType.Medium; // 30% chance
+            else
+                randonEnemy = EnemyType.Heavy; // 10% chance (rest)
+            
+            // Spawn and add the enemy to the scen
+            Program.currentScene?.AddObject(SpawnEnemy(randonEnemy));
+        }
+    }
     
     public static Enemy SpawnEnemy(EnemyType enemyType)
     {
         int posX, posY;
 
-        posX = randomX.Next(1, Program.currentScene.Width - 1);
-        
-        if (posX == 1 || posX == Program.currentScene.Width - 2)
+        // Randomly select an edge: 0 = top, 1 = bottom, 2 = left, 3 = right
+        int edge = randomX.Next(0, 4);
+
+        switch (edge)
         {
-            posY = randomY.Next(1, Program.currentScene.Height);
-        }
-        else
-        {
-            posY = (randomY.Next(0, 2) == 0) ? 1 : Program.currentScene.Height - 2;
+            case 0: // Top edge
+                posX = randomX.Next(1, Program.currentScene.Width - 1);
+                posY = 1;
+                break;
+            case 1: // Bottom edge
+                posX = randomX.Next(1, Program.currentScene.Width - 1);
+                posY = Program.currentScene.Height - 2;
+                break;
+            case 2: // Left edge
+                posX = 1;
+                posY = randomY.Next(1, Program.currentScene.Height - 1);
+                break;
+            case 3: // Right edge
+                posX = Program.currentScene.Width - 2;
+                posY = randomY.Next(1, Program.currentScene.Height - 1);
+                break;
+            default:
+                posX = 1;
+                posY = 1;
+                break;
         }
 
+        // Create an enemy with stats based on its type
         switch (enemyType)
         {
             case EnemyType.Normal:
