@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using Spectre.Console;
-using Spectre.Console.Cli;
 
 namespace DigitalSurvivors;
 
@@ -267,8 +266,6 @@ public class Renderer
                 return ":zombie:";
             case 'H':
                 return ":robot:";
-            case 'E':
-                return ":alien_monster:";
             default:
                 return gameObject.sprite.ToString();
         }

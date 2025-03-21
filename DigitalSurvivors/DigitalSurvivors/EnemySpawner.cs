@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace DigitalSurvivors;
 
-// Spawns enemies at random positions with a delay
+// Spawns enemies at random positions with a delay based on chance
 public class EnemySpawner : GameObject
 {
     private float _delayTime = 1f; // Delay before spawning a new enemy
